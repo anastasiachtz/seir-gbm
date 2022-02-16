@@ -104,6 +104,7 @@ data {
   int yD[n_obs];                // data, daily number of deaths
   int<lower = 1> sigmaBM_cp1;   // change points on BM volatility
   int<lower = 1> sigmaBM_cp2;   
+  int<lower = 1> sigmaBM_cp3;
   int<lower = 1> ifr_cp1;       // change points on ifr
   int<lower = 1> ifr_cp2;
   int<lower = 1> ifr_cp3;
@@ -145,6 +146,7 @@ parameters {
   real<lower = 0> sigmaBM1;          // standard deviation of BM 1st wave
   real<lower = 0> sigmaBM2;          // standard deviation of BM 2nd wave
   real<lower = 0> sigmaBM3;          // standard deviation of BM 3rd wave
+  real<lower = 0> sigmaBM4;          // standard deviation of BM 4th wave
   real<lower = 0> ifr[5];            // probability of death given infection
   real<lower = 0> reciprocal_phiD;   // overdispersion of NB on deaths
 }
@@ -201,7 +203,8 @@ model {
   gamma2_N[2] ~ gamma(2500,5000);    // Assume mean infectious period = 4 days, mean=2/4
   sigmaBM1 ~ cauchy(0,5);
   sigmaBM2 ~ cauchy(0,5);
-  sigmaBM3 ~ cauchy(0,5);  
+  sigmaBM3 ~ cauchy(0,5);
+  sigmaBM4 ~ cauchy(0,5);
   for (i in 1:5){
     ifr[i] ~ beta_proportion(ifr_mu[i],10000000000);
   }
@@ -213,8 +216,10 @@ model {
       eta[i] ~ normal(eta[i-1], sigmaBM1);
     else if (sigmaBM_cp1<=i<sigmaBM_cp2)
       eta[i] ~ normal(eta[i-1], sigmaBM2);
-    else
+    else if (sigmaBM_cp2<=i<sigmaBM_cp3)
       eta[i] ~ normal(eta[i-1], sigmaBM3);
+    else
+      eta[i] ~ normal(eta[i-1], sigmaBM4);
   }
   
   yD ~ neg_binomial_2(muD,phiD);
@@ -226,10 +231,10 @@ generated quantities {
   real dev;                    // deviance
   
   for (i in 1:n_obs){
-  if (i<time_change_gamma)
-  R_0[i] = (2*beta_N[i])/gamma2_N[1];
-  else
-  R_0[i] = (2*beta_N[i])/gamma2_N[2];
+    if (i<time_change_gamma)
+      R_0[i] = (2*beta_N[i])/gamma2_N[1];
+    else
+      R_0[i] = (2*beta_N[i])/gamma2_N[2];
   }
   
   for (i in 1:n_obs) {
