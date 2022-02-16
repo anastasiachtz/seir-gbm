@@ -7,9 +7,9 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     full_cum_confGR <- subset(time_series_covid19_confirmed_global, `Country/Region`=="Greece")[c(5:length(time_series_covid19_confirmed_global))]
     full_cum_deadGR <- subset(time_series_covid19_deaths_global, `Country/Region`=="Greece")[c(5:length(time_series_covid19_deaths_global))]
     timeGR <- as.vector(names(full_cum_confGR))
-    cum_confGR <- as.numeric(full_cum_confGR)[(match('3/7/20', timeGR)):(match('6/30/21', timeGR))]
-    cum_deadGR <- as.numeric(full_cum_deadGR)[(match('3/7/20', timeGR)):(match('6/30/21', timeGR))]
-    fit_timeGR <- timeGR[(match('3/7/20', timeGR)):(match('6/30/21', timeGR))]   # 07/03 - 30/06
+    cum_confGR <- as.numeric(full_cum_confGR)[(match('3/7/20', timeGR)):(match('9/30/21', timeGR))]
+    cum_deadGR <- as.numeric(full_cum_deadGR)[(match('3/7/20', timeGR)):(match('9/30/21', timeGR))]
+    fit_timeGR <- timeGR[(match('3/7/20', timeGR)):(match('9/30/21', timeGR))]   # 07/03 - 30/09
     sample_daysGR <- length(fit_timeGR)
     sample_time=1:sample_daysGR
     new_casesGR <- rep(0,sample_daysGR)
@@ -44,18 +44,18 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     }
     
     # Almost all individuals are susceptible at the start of the epidemic
-    initial_GR <- c(10422884,50,50,35,35,0,65)
+    initial_GR <- c(10422714,100,100,70,70,0,65)
     
     left <- seq(1,sample_daysGR,1)
     right <- seq(2,(sample_daysGR+1),1)
-    approx_ifr_GR <- c(0.01142,0.007994,0.01142,0.0115,0.0002)
+    approx_ifr_GR <- c(0.01142,0.007994,0.01142,0.0115,0.005)
     
     # Modify data into a form suitable for Stan
     cov_data_by_country = list(n_obs = sample_daysGR,
                     n_difeq = 7,
                     n_pop = population_GR,
                     v = vaccines_t_45days_GR,
-                    rho=0.9,
+                    rho=0.5,
                     yD = deadGR,
                     y_init = initial_GR,
                     t0 = 0,
@@ -66,6 +66,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
                     time_change_gamma=match('1/1/21', fit_timeGR),
                     sigmaBM_cp1=match('8/1/20', fit_timeGR),
                     sigmaBM_cp2=match('1/10/21', fit_timeGR),
+                    sigmaBM_cp3=match('6/22/21', fit_timeGR),
                     ifr_cp1=match('7/28/20', fit_timeGR),
                     ifr_cp2=match('11/1/20', fit_timeGR),
                     ifr_cp3=match('2/9/21', fit_timeGR),
@@ -79,9 +80,9 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     full_cum_confPT <- portugal_data$confirmados
     full_cum_deadPT <- portugal_data$obitos
     timePT <- portugal_data$data
-    cum_confPT <- as.numeric(full_cum_confPT)[(match('07-03-2020', timePT)):(match('30-06-2021', timePT))]
-    cum_deadPT <- as.numeric(full_cum_deadPT)[(match('07-03-2020', timePT)):(match('30-06-2021', timePT))]
-    fit_timePT <- timePT[(match('07-03-2020', timePT)):(match('30-06-2021', timePT))]
+    cum_confPT <- as.numeric(full_cum_confPT)[(match('07-03-2020', timePT)):(match('30-09-2021', timePT))]
+    cum_deadPT <- as.numeric(full_cum_deadPT)[(match('07-03-2020', timePT)):(match('30-09-2021', timePT))]
+    fit_timePT <- timePT[(match('07-03-2020', timePT)):(match('30-09-2021', timePT))]
     sample_daysPT <- length(fit_timePT)
     sample_time=1:sample_daysPT
     new_casesPT <- rep(0,sample_daysPT)
@@ -108,16 +109,17 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     for(i in 2:length(infection_death)) {
       infection_death[i] = pgamma(i+.5,shape=6.29,rate =0.26) - pgamma(i-.5,shape=6.29,rate =0.26)
     }
-    initial_PT <- c(10196557,45,45,30,30,0,40)
+    
+    initial_PT <- c(10196107,200,200,100,100,0,80)
     left <- seq(1,sample_daysPT,1)
     right <- seq(2,(sample_daysPT+1),1)
-    approx_ifr_PT <- c(0.01157665,0.008165473,0.01157665,0.00001,0.000001)
+    approx_ifr_PT <- c(0.01157665,0.008165473,0.01157665,0.005,0.001)
     
     cov_data_by_country = list(n_obs = sample_daysPT,
                     n_difeq = 7,
                     n_pop = population_PT,
                     v = vaccines_t_45days_PT,
-                    rho=0.9,
+                    rho=0.5,
                     yD = deadPT,
                     y_init = initial_PT,
                     t0 = 0,
@@ -128,10 +130,11 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
                     time_change_gamma=match('01-01-2021', fit_timePT),
                     sigmaBM_cp1=match('01-08-2020', fit_timePT),
                     sigmaBM_cp2=match('21-12-2020', fit_timePT),
+                    sigmaBM_cp3=match('10-05-2021', fit_timePT),
                     ifr_cp1=match('01-06-2020', fit_timePT),
                     ifr_cp2=match('16-11-2020', fit_timePT),  
                     ifr_cp3=match('12-01-2021', fit_timePT),  
-                    ifr_cp4=match('01-05-2021', fit_timePT),   
+                    ifr_cp4=match('01-05-2021', fit_timePT), 
                     ifr_mu=approx_ifr_PT) 
   }
   
@@ -144,15 +147,18 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     aggreg_cum_confUK <- as.matrix(full_cum_confUK)
     aggreg_cum_deadUK <- as.matrix(full_cum_deadUK)
     timeUK <- as.vector(names(full_cum_confUK))
-    cum_confUK <- as.numeric(colSums(aggreg_cum_confUK))[(match('2/28/20', timeUK)):(match('6/30/21', timeUK))]
-    cum_deadUK <- as.numeric(colSums(aggreg_cum_deadUK))[(match('2/28/20', timeUK)):(match('6/30/21', timeUK))]
-    fit_timeUK <- timeUK[(match('2/28/20', timeUK)):(match('6/30/21', timeUK))]
+    cum_confUK <- as.numeric(colSums(aggreg_cum_confUK))[(match('2/28/20', timeUK)):(match('9/30/21', timeUK))]
+    cum_deadUK <- as.numeric(colSums(aggreg_cum_deadUK))[(match('2/28/20', timeUK)):(match('9/30/21', timeUK))]
+    fit_timeUK <- timeUK[(match('2/28/20', timeUK)):(match('9/30/21', timeUK))]
     sample_daysUK <- length(fit_timeUK)
     sample_time=1:sample_daysUK
     new_casesUK <- rep(0,sample_daysUK)
     new_casesUK[1] <- cum_confUK[1]
     for (t in 2:sample_daysUK){ 
       new_casesUK[t] <- cum_confUK[t]-cum_confUK[t-1]
+      if (new_casesUK[t]<0) {
+        new_casesUK[t]<-new_casesUK[t-1]
+      }
     }
     deadUK <- rep(0,sample_daysUK)
     deadUK[1] <- cum_deadUK[1]
@@ -163,16 +169,10 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
       }
     }
     
-    vaccines <- read_csv("https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/vaccinations/vaccinations.csv")
-    vaccines_UK <- subset(vaccines, `location`=="United Kingdom")
-    cum_vaccines1 <- vaccines_UK$people_vaccinated
-    cum_vaccines1[is.na(cum_vaccines1)] <- 0
-    new_vaccines1 <- rep(0,length(cum_vaccines1))
-    new_vaccines1[1:29] <- cum_vaccines1[1:29]
-    for (t in 30:length(cum_vaccines1)){
-      new_vaccines1[t] <- cum_vaccines1[t]-cum_vaccines1[t-1]
-    }
-    vaccines_t_45days <- c(rep(0,(length(seq(as.Date('2020/02/28'),as.Date('2020/12/12'),"days")) + 45)),new_vaccines1)
+    UK_data_V <- read.csv('./data/UK_vaccinations.csv', head = TRUE, sep=",")
+    new_vaccines1 <- rev(UK_data_V$newPeopleVaccinatedFirstDoseByPublishDate)
+    new_vaccines1[is.na(new_vaccines1)] <- 0
+    vaccines_t_45days <- c(rep(0,(length(seq(as.Date('2020/02/28'),as.Date('2021/01/10'),"days")) + 45)),new_vaccines1)
     vaccines_t_45days_UK  <- vaccines_t_45days[1:sample_daysUK]
     
     infection_death <-  rep(0,sample_daysUK)
@@ -180,16 +180,17 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     for(i in 2:length(infection_death)) {
       infection_death[i] <-  pgamma(i+.5,shape=6.29,rate =0.26) - pgamma(i-.5,shape=6.29,rate =0.26)
     }
+    
     left <- seq(1,sample_daysUK,1)
     right <- seq(2,(sample_daysUK+1),1)
-    initial_UK <- c(67884511,450,450,300,300,0,300)
-    approx_ifr_UK  <- c(0.01035,0.007245,0.0095,0.00004,0.000018)
+    initial_UK <- c(67883011,900,900,600,600,0,300)
+    approx_ifr_UK  <- c(0.01035,0.007245,0.0095,0.002,0.001)
     
     cov_data_by_country <- list(n_obs = sample_daysUK,
                                 n_difeq = 7, 
                                 n_pop = population_UK, 
                                 v = vaccines_t_45days_UK , 
-                                rho=0.9,
+                                rho=0.5,
                                 yD = deadUK,
                                 y_init = initial_UK, 
                                 t0 = 0, 
@@ -200,6 +201,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
                                 time_change_gamma=match('1/1/21', fit_timeUK),
                                 sigmaBM_cp1=match('8/1/20', fit_timeUK),
                                 sigmaBM_cp2=match('11/30/20', fit_timeUK),
+                                sigmaBM_cp3=match('5/10/21', fit_timeUK),
                                 ifr_cp1=match('7/18/20', fit_timeUK),
                                 ifr_cp2=match('10/1/20', fit_timeUK),
                                 ifr_cp3=match('1/30/21', fit_timeUK),
@@ -214,9 +216,9 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     full_cum_confDE <- subset(time_series_covid19_confirmed_global, `Country/Region`=="Germany")[c(5:length(time_series_covid19_confirmed_global))]
     full_cum_deadDE <- subset(time_series_covid19_deaths_global, `Country/Region`=="Germany")[c(5:length(time_series_covid19_deaths_global))]
     timeDE <- as.vector(names(full_cum_confDE))
-    cum_confDE <- as.numeric(full_cum_confDE)[(match('3/1/20', timeDE)):(match('6/30/21', timeDE))]
-    cum_deadDE <- as.numeric(full_cum_deadDE)[(match('3/1/20', timeDE)):(match('6/30/21', timeDE))]
-    fit_timeDE <- timeDE[(match('3/1/20', timeDE)):(match('6/30/21', timeDE))]
+    cum_confDE <- as.numeric(full_cum_confDE)[(match('3/1/20', timeDE)):(match('9/30/21', timeDE))]
+    cum_deadDE <- as.numeric(full_cum_deadDE)[(match('3/1/20', timeDE)):(match('9/30/21', timeDE))]
+    fit_timeDE <- timeDE[(match('3/1/20', timeDE)):(match('9/30/21', timeDE))]
     sample_daysDE <- length(fit_timeDE)
     sample_time=1:sample_daysDE
     new_casesDE <- rep(0,sample_daysDE)
@@ -251,14 +253,14 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     
     left <- seq(1,sample_daysDE,1)
     right <- seq(2,(sample_daysDE+1),1)
-    initial_DE <- c(83782942,300,300,200,200,0,250)
-    approx_ifr_DE <- c(0.011039996,0.005434144,0.011420979,0.005,0.0015)
+    initial_DE <- c(83781942,600,600,400,400,0,250)
+    approx_ifr_DE <- c(0.011039996,0.005269394,0.011530708,0.005,0.002)
     
     cov_data_by_country = list(n_obs = sample_daysDE,
                     n_difeq = 7,
                     n_pop = population_DE,
                     v = vaccines_t_45days_DE,
-                    rho=0.9,
+                    rho=0.5,
                     yD = deadDE,
                     y_init = initial_DE,
                     t0 = 0,
@@ -269,6 +271,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
                     time_change_gamma=match('1/1/21', fit_timeDE),
                     sigmaBM_cp1=match('8/1/20', fit_timeDE),
                     sigmaBM_cp2=match('2/20/21', fit_timeDE),
+                    sigmaBM_cp3=match('6/27/21', fit_timeDE),
                     ifr_cp1=match('5/27/20', fit_timeDE),
                     ifr_cp2=match('11/25/20', fit_timeDE),
                     ifr_cp3=match('2/24/21', fit_timeDE),
@@ -283,12 +286,12 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     Sweden_data_C <- read.csv('./data/Sweden_cases.csv', head = TRUE, sep=";")
     Sweden_data_D <- read.csv('./data/Sweden_deaths.csv', head = TRUE, sep=";")
     full_new_casesSE <- Sweden_data_C$Total_Number_of_Cases
-    full_deadSE <- Sweden_data_D$Number_of_deaths
+    full_deadSE <- Sweden_data_D$Number_of_deaths_rep_lag
     full_deadSE <- c(rep(0,length(seq(as.Date('2020/02/04'),as.Date('2020/03/10'),"days"))),full_deadSE)
-    timeSE <- Sweden_data_C$ï.¿date
-    fit_timeSE <- timeSE[(match('4/3/2020', timeSE)):(match('30/6/2021', timeSE))]
-    new_casesSE <- full_new_casesSE[(match('4/3/2020', timeSE)):(match('30/6/2021', timeSE))]
-    deadSE <- full_deadSE[(match('4/3/2020', timeSE)):(match('30/6/2021', timeSE))]
+    timeSE <- Sweden_data_C$ï..date
+    fit_timeSE <- timeSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
+    new_casesSE <- full_new_casesSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
+    deadSE <- full_deadSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
     sample_daysSE <- length(fit_timeSE)
     sample_time=1:sample_daysSE
     
@@ -296,7 +299,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     new_vaccines1 <- Sweden_data_V$daily_vaccinations
     vaccines_t_45days <- c(rep(0,(length(seq(as.Date('2020/03/04'),as.Date('2020/12/26'),"days")) + 45)),new_vaccines1)
     vaccines_t_45days_SE <- vaccines_t_45days[1:sample_daysSE]
-  
+    
     infection_death = rep(0,sample_daysSE)
     infection_death[1] = pgamma(1.5,shape=6.29,rate =0.26) - pgamma(0,shape=6.29,rate =0.26)
     for(i in 2:length(infection_death)) {
@@ -306,28 +309,29 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     left <- seq(1,sample_daysSE,1)
     right <- seq(2,(sample_daysSE+1),1)
     initial_SE <- c(10098905,100,100,80,80,0,90)
-    approx_ifr_SE <- c(0.0103,0.007,0.009,0.001,0.00001)
+    approx_ifr_SE <- c(0.0103,0.007,0.009,0.002,0.001)
     
     cov_data_by_country = list(n_obs = sample_daysSE,
-                    n_difeq = 7,
-                    n_pop = population_SE,
-                    v = vaccines_t_45days_SE,
-                    rho=0.9,
-                    yD = deadSE,
-                    y_init = initial_SE,
-                    t0 = 0,
-                    ts = sample_time,
-                    I_D = infection_death,
-                    left_t=left,
-                    right_t=right,
-                    time_change_gamma=match("1/1/2021", fit_timeSE),
-                    sigmaBM_cp1=match("1/9/2020", fit_timeSE),
-                    sigmaBM_cp2=match("8/2/2021", fit_timeSE),
-                    ifr_cp1=match("16/7/2020", fit_timeSE),
-                    ifr_cp2=match("2/10/2020", fit_timeSE),
-                    ifr_cp3=match("20/12/2020", fit_timeSE),
-                    ifr_cp4=match("1/2/2021", fit_timeSE),
-                    ifr_mu=approx_ifr_SE) 
+                               n_difeq = 7,
+                               n_pop = population_SE,
+                               v = vaccines_t_45days_SE,
+                               rho=0.5,
+                               yD = deadSE,
+                               y_init = initial_SE,
+                               t0 = 0,
+                               ts = sample_time,
+                               I_D = infection_death,
+                               left_t=left,
+                               right_t=right,
+                               time_change_gamma=match("1/1/21", fit_timeSE),
+                               sigmaBM_cp1=match("1/9/20", fit_timeSE),
+                               sigmaBM_cp2=match("8/2/21", fit_timeSE),
+                               sigmaBM_cp3=match("6/7/21", fit_timeSE),
+                               ifr_cp1=match("16/7/20", fit_timeSE),
+                               ifr_cp2=match("2/10/20", fit_timeSE),
+                               ifr_cp3=match("20/12/20", fit_timeSE),
+                               ifr_cp4=match("1/2/21", fit_timeSE),
+                               ifr_mu=approx_ifr_SE) 
     
   }
   
@@ -338,9 +342,9 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     full_cum_confNO <- subset(time_series_covid19_confirmed_global, `Country/Region`=="Norway")[c(5:length(time_series_covid19_confirmed_global))]
     full_cum_deadNO <- subset(time_series_covid19_deaths_global, `Country/Region`=="Norway")[c(5:length(time_series_covid19_deaths_global))]
     timeNO <- as.vector(names(full_cum_confNO))
-    cum_confNO <- as.numeric(full_cum_confNO)[(match('3/11/20', timeNO)):(match('6/30/21', timeNO))]
-    cum_deadNO <- as.numeric(full_cum_deadNO)[(match('3/11/20', timeNO)):(match('6/30/21', timeNO))]
-    fit_timeNO <- timeNO[(match('3/11/20', timeNO)):(match('6/30/21', timeNO))]
+    cum_confNO <- as.numeric(full_cum_confNO)[(match('3/11/20', timeNO)):(match('9/30/21', timeNO))]
+    cum_deadNO <- as.numeric(full_cum_deadNO)[(match('3/11/20', timeNO)):(match('9/30/21', timeNO))]
+    fit_timeNO <- timeNO[(match('3/11/20', timeNO)):(match('9/30/21', timeNO))]
     sample_daysNO <- length(fit_timeNO)
     sample_time=1:sample_daysNO
     new_casesNO <- rep(0,sample_daysNO)
@@ -372,31 +376,33 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     for(i in 2:length(infection_death)) {
       infection_death[i] = pgamma(i+.5,shape=6.29,rate =0.26) - pgamma(i-.5,shape=6.29,rate =0.26)
     }
-    initial_NO <- c(5420341,250,250,200,200,0,200)
+    
+    initial_NO <- c(5419841,400,400,300,300,0,200)
     left <- seq(1,sample_daysNO,1)
     right <- seq(2,(sample_daysNO+1),1)
-    approx_ifr_NO <- c(0.0091,0.006,0.005,0.004,0.002)
+    approx_ifr_NO <- c(0.0091,0.006,0.005,0.0027,0.0015)
     
     cov_data_by_country = list(n_obs = sample_daysNO,
-                    n_difeq = 7,
-                    n_pop = population_NO,
-                    v = vaccines_t_45days_NO,
-                    rho=0.9,
-                    yD = deadNO,
-                    y_init = initial_NO,
-                    t0 = 0,
-                    ts = sample_time,
-                    I_D = infection_death,
-                    left_t=left,
-                    right_t=right,
-                    time_change_gamma=match('1/1/21', fit_timeNO),    
-                    sigmaBM_cp1=match('7/15/20', fit_timeNO),
-                    sigmaBM_cp2=match('2/7/21', fit_timeNO),
-                    ifr_cp1=match('5/13/20', fit_timeNO),
-                    ifr_cp2=match('10/1/20', fit_timeNO),
-                    ifr_cp3=match('12/23/20', fit_timeNO),
-                    ifr_cp4=match('1/21/21', fit_timeNO),
-                    ifr_mu=approx_ifr_NO) 
+                               n_difeq = 7,
+                               n_pop = population_NO,
+                               v = vaccines_t_45days_NO,
+                               rho=0.5,
+                               yD = deadNO,
+                               y_init = initial_NO,
+                               t0 = 0,
+                               ts = sample_time,
+                               I_D = infection_death,
+                               left_t=left,
+                               right_t=right,
+                               time_change_gamma=match('1/1/21', fit_timeNO),    
+                               sigmaBM_cp1=match('7/15/20', fit_timeNO),
+                               sigmaBM_cp2=match('2/7/21', fit_timeNO),
+                               sigmaBM_cp3=match('7/10/21', fit_timeNO),
+                               ifr_cp1=match('5/13/20', fit_timeNO),
+                               ifr_cp2=match('10/1/20', fit_timeNO),
+                               ifr_cp3=match('12/23/20', fit_timeNO),
+                               ifr_cp4=match('5/19/21', fit_timeNO),
+                               ifr_mu=approx_ifr_NO) 
     
   }
   
