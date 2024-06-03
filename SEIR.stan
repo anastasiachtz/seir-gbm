@@ -206,7 +206,7 @@ model {
   sigmaBM3 ~ cauchy(0,5);
   sigmaBM4 ~ cauchy(0,5);
   for (i in 1:5){
-    ifr[i] ~ beta_proportion(ifr_mu[i],10000000000);
+    ifr[i] ~ beta_proportion(ifr_mu[i],1000000000);
   }
   reciprocal_phiD ~ cauchy(0,5);
   
