@@ -228,7 +228,7 @@ reg_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
   }
   
   else if (country == "UK"){
-    load("UK_SEIR_VAC_new_test.RData")
+    load("UK_SEIR_VAC.RData")
     posts_1 <-  rstan::extract(fit_UK)
     post_beta <- posts_1$beta_N
     median_beta = apply(post_beta, 2, median)
@@ -467,7 +467,7 @@ reg_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     
     Sweden_data_C <- read.csv('./data/Sweden_cases.csv', head = TRUE, sep=";")
     full_new_casesSE <- Sweden_data_C$Total_Number_of_Cases
-    timeSE <- Sweden_data_C$ï..date
+    timeSE <- Sweden_data_C$date
     fit_timeSE <- timeSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
     new_casesSE <- full_new_casesSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
     sample_daysSE <- length(fit_timeSE)
@@ -568,7 +568,7 @@ reg_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
   }
   
   else if (country == "NO"){
-    load("NO_SEIR_VAC_new1_SMALLER.RData")
+    load("NO_SEIR_VAC.RData")
     posts_1 <-  rstan::extract(fit_NO)
     post_beta <- posts_1$beta_N
     median_beta = apply(post_beta, 2, median)
