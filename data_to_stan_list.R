@@ -288,7 +288,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     full_new_casesSE <- Sweden_data_C$Total_Number_of_Cases
     full_deadSE <- Sweden_data_D$Number_of_deaths_rep_lag
     full_deadSE <- c(rep(0,length(seq(as.Date('2020/02/04'),as.Date('2020/03/10'),"days"))),full_deadSE)
-    timeSE <- Sweden_data_C$ï..date
+    timeSE <- Sweden_data_C$date
     fit_timeSE <- timeSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
     new_casesSE <- full_new_casesSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
     deadSE <- full_deadSE[(match('4/3/20', timeSE)):(match('30/9/21', timeSE))]
@@ -368,6 +368,7 @@ cov_data <- function(country = c("GR", "PT", "UK", "DE", "SE", "NO")){
     for (t in 2:length(cum_vaccines1)){
       new_vaccines1[t] <- cum_vaccines1[t]-cum_vaccines1[t-1]
     }
+    new_vaccines1[is.na(new_vaccines1)] <- 0
     vaccines_t_45days <- c(rep(0,(length(seq(as.Date('2020/03/11'),as.Date('2020/12/01'),"days")) + 45)),new_vaccines1)
     vaccines_t_45days_NO <- vaccines_t_45days[1:sample_daysNO]
     
