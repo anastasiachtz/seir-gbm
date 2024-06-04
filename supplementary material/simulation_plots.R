@@ -5,7 +5,7 @@ library(ggplot2)
 
 nuts_fit_summary <- summary(fit, pars = c("lp__","beta0", "beta_N[20]", "beta_N[60]", "beta_N[100]", "beta_N[120]", "beta_N[180]", "gamma1", "gamma2", "sigmaBM1", "sigmaBM2", "ifr", "phiD"))$summary
 options(scipen = 999)
-print(nuts_fit_1_summary,scientific=FALSE,digits=2)
+print(nuts_fit_summary,scientific=FALSE,digits=2)
 
 mod_diagnostics <-rstan::get_sampler_params(fit)
 
