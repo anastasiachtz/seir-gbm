@@ -4,8 +4,7 @@
 ## Citation
 
 A. Chatzilena, N. Demiris, and K. Kalogeropoulos. _A modelling framework for the analysis of the transmission of
-SARS-CoV2. Statistics in Medicine. 2024; 1-17. doi: 10.1002/sim.10195
-
+SARS-CoV2. Statistics in Medicine. 2024; 1-17. [https://doi.org/10.1002/sim.10195](https://doi.org/10.1002/sim.10195)
 ### Background
 
 Action plans against the current SARS-CoV-2 pandemic have been implemented around the globe in order to reduce transmission. The reproduction number has been found to respond to public health interventions changing throughout the pandemic waves. However, the actual global burden of SARS-CoV-2 remains unknown due to severe under-ascertainment of cases. The use of reported  deaths has been pointed out as a more reliable source of information, likely less prone to under-reporting. Given that daily deaths occur from past infections weighted by their probability of death, one may infer the true number of infections accounting for their age distribution, using the data on reported deaths.
