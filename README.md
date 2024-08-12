@@ -3,7 +3,7 @@
 
 ## Citation
 
-A. Chatzilena, N. Demiris, and K. Kalogeropoulos. _A modelling framework for the analysis of the transmission of
+A. Chatzilena, N. Demiris, and K. Kalogeropoulos. A modelling framework for the analysis of the transmission of
 SARS-CoV2. Statistics in Medicine. 2024; 1-17. [https://doi.org/10.1002/sim.10195](https://doi.org/10.1002/sim.10195)
 ### Background
 
